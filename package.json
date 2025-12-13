@@ -1,0 +1,44 @@
+{
+  "name": "bare-system-logger",
+  "version": "1.0.0",
+  "description": "System logger for Bare",
+  "exports": {
+    "./package": "./package.json",
+    ".": {
+      "types": "./index.d.ts",
+      "default": "./index.js"
+    }
+  },
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "binding.c",
+    "binding.js",
+    "CMakeLists.txt",
+    "prebuilds"
+  ],
+  "addon": true,
+  "scripts": {
+    "test": "prettier . --check && bare test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/holepunchto/bare-system-logger.git"
+  },
+  "author": "Holepunch",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/holepunchto/bare-system-logger/issues"
+  },
+  "homepage": "https://github.com/holepunchto/bare-system-logger#readme",
+  "dependencies": {
+    "bare-logger": "^2.0.0"
+  },
+  "devDependencies": {
+    "brittle": "^3.4.0",
+    "cmake-bare": "^1.1.2",
+    "cmake-fetch": "^1.1.1",
+    "prettier": "^3.3.3",
+    "prettier-config-holepunch": "^2.0.0"
+  }
+}
