@@ -17,6 +17,7 @@ log.info('Hello %s', 'world!')
 Apache-2.0
 
 <!-- bare-refgen:api start -->
+
 ## API
 
 ### Classes
@@ -26,7 +27,7 @@ Apache-2.0
 [source](https://github.com/holepunchto/bare-system-logger/blob/v1.0.3/index.d.ts#L3)
 
 ```ts
-class SystemLog {
-}
+class SystemLog {}
 ```
+
 <!-- bare-refgen:api end -->
