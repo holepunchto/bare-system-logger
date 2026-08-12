@@ -18,4 +18,6 @@ Apache-2.0
 
 ## API
 
-See the [full API reference](https://docs.pears.com/reference/bare/modules/bare-system-logger).
+See the [`bare-system-logger` reference][reference].
+
+[reference]: https://docs.pears.com/reference/bare/modules/bare-system-logger
