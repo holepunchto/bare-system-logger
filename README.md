@@ -12,12 +12,12 @@ const log = new SystemLog()
 log.info('Hello %s', 'world!')
 ```
 
-## License
-
-Apache-2.0
-
 ## API
 
 See the [`bare-system-logger` reference][reference].
 
 [reference]: https://docs.pears.com/reference/bare/modules/bare-system-logger
+
+## License
+
+Apache-2.0
