@@ -7,7 +7,7 @@
 #include <utf.h>
 
 static js_value_t *
-bare_logger_debug(js_env_t *env, js_callback_info_t *info) {
+bare_system_logger_debug(js_env_t *env, js_callback_info_t *info) {
   int err;
 
   js_handle_scope_t *scope;
@@ -43,7 +43,7 @@ bare_logger_debug(js_env_t *env, js_callback_info_t *info) {
 }
 
 static js_value_t *
-bare_logger_info(js_env_t *env, js_callback_info_t *info) {
+bare_system_logger_info(js_env_t *env, js_callback_info_t *info) {
   int err;
 
   js_handle_scope_t *scope;
@@ -79,7 +79,7 @@ bare_logger_info(js_env_t *env, js_callback_info_t *info) {
 }
 
 static js_value_t *
-bare_logger_warn(js_env_t *env, js_callback_info_t *info) {
+bare_system_logger_warn(js_env_t *env, js_callback_info_t *info) {
   int err;
 
   js_handle_scope_t *scope;
@@ -115,7 +115,7 @@ bare_logger_warn(js_env_t *env, js_callback_info_t *info) {
 }
 
 static js_value_t *
-bare_logger_error(js_env_t *env, js_callback_info_t *info) {
+bare_system_logger_error(js_env_t *env, js_callback_info_t *info) {
   int err;
 
   js_handle_scope_t *scope;
@@ -151,7 +151,7 @@ bare_logger_error(js_env_t *env, js_callback_info_t *info) {
 }
 
 static js_value_t *
-bare_logger_fatal(js_env_t *env, js_callback_info_t *info) {
+bare_system_logger_fatal(js_env_t *env, js_callback_info_t *info) {
   int err;
 
   js_handle_scope_t *scope;
@@ -189,7 +189,7 @@ bare_logger_fatal(js_env_t *env, js_callback_info_t *info) {
 }
 
 static js_value_t *
-bare_logger_exports(js_env_t *env, js_value_t *exports) {
+bare_system_logger_exports(js_env_t *env, js_value_t *exports) {
   int err;
 
 #define V(name, fn) \
@@ -201,14 +201,14 @@ bare_logger_exports(js_env_t *env, js_value_t *exports) {
     assert(err == 0); \
   }
 
-  V("debug", bare_logger_debug)
-  V("info", bare_logger_info)
-  V("warn", bare_logger_warn)
-  V("error", bare_logger_error)
-  V("fatal", bare_logger_fatal)
+  V("debug", bare_system_logger_debug)
+  V("info", bare_system_logger_info)
+  V("warn", bare_system_logger_warn)
+  V("error", bare_system_logger_error)
+  V("fatal", bare_system_logger_fatal)
 #undef V
 
   return exports;
 }
 
-BARE_MODULE(bare_logger, bare_logger_exports)
+BARE_MODULE(bare_system_logger, bare_system_logger_exports)
