@@ -1,5 +1,9 @@
 import Log from 'bare-logger'
 
+/**
+ * A logger that writes formatted messages to the native OS system log, at `debug`, `info`, `warn`,
+ * `error`, and `fatal` severity levels.
+ */
 interface SystemLog extends Log {}
 
 declare class SystemLog {}
