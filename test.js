@@ -9,3 +9,16 @@ test('log levels', async (t) => {
   await t.execution(() => log.warn('This is a warning log'))
   await t.execution(() => log.error('This is an error log'))
 })
+
+test('unicode', async (t) => {
+  const log = new SystemLog()
+
+  await t.execution(() => log.debug('Hëllø wørld'))
+  await t.execution(() => log.debug('😀'))
+})
+
+test('format specifiers are not interpreted', async (t) => {
+  const log = new SystemLog()
+
+  await t.execution(() => log.debug('100%s %n %x percent'))
+})

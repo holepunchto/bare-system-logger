@@ -2,17 +2,31 @@
 #include <bare.h>
 #include <js.h>
 #include <log.h>
-#include <stdio.h>
+#include <stdbool.h>
 #include <stdlib.h>
+#include <string.h>
 #include <utf.h>
+#include <uv.h>
 
-static js_value_t *
-bare_system_logger_debug(js_env_t *env, js_callback_info_t *info) {
+static bool
+bare_system_logger__check_string(js_env_t *env, js_value_t *value) {
   int err;
 
-  js_handle_scope_t *scope;
-  err = js_open_handle_scope(env, &scope);
+  bool is_string;
+  err = js_is_string(env, value, &is_string);
   assert(err == 0);
+
+  if (!is_string) {
+    err = js_throw_type_error(env, NULL, "Data must be a string");
+    assert(err == 0);
+  }
+
+  return is_string;
+}
+
+static bool
+bare_system_logger__read(js_env_t *env, js_callback_info_t *info, utf8_t **result) {
+  int err;
 
   js_value_t *argv[1];
   size_t argc = 1;
@@ -20,20 +34,49 @@ bare_system_logger_debug(js_env_t *env, js_callback_info_t *info) {
   err = js_get_callback_info(env, info, &argc, argv, NULL, NULL);
   assert(err == 0);
 
-  assert(argc == 1);
+  if (argc < 1) {
+    err = js_throw_type_errorf(env, NULL, "Expected 1 argument, got %zu", argc);
+    assert(err == 0);
 
-  size_t data_len;
-  err = js_get_value_string_utf8(env, argv[0], NULL, 0, &data_len);
+    return false;
+  }
+
+  if (!bare_system_logger__check_string(env, argv[0])) return false;
+
+  size_t len;
+  err = js_get_value_string_utf8(env, argv[0], NULL, 0, &len);
   assert(err == 0);
 
-  data_len += 1 /* NULL */;
+  utf8_t *data = malloc(len + 1 /* NULL */);
 
-  utf8_t *data = malloc(data_len);
-  err = js_get_value_string_utf8(env, argv[0], data, data_len, NULL);
+  if (data == NULL) {
+    err = js_throw_error(env, uv_err_name(UV_ENOMEM), uv_strerror(UV_ENOMEM));
+    assert(err == 0);
+
+    return false;
+  }
+
+  err = js_get_value_string_utf8(env, argv[0], data, len + 1, &len);
   assert(err == 0);
 
-  err = js_close_handle_scope(env, scope);
-  assert(err == 0);
+  if (memchr(data, '\0', len) != NULL) {
+    free(data);
+
+    err = js_throw_type_error(env, NULL, "Data must not contain NULL bytes");
+    assert(err == 0);
+
+    return false;
+  }
+
+  *result = data;
+
+  return true;
+}
+
+static js_value_t *
+bare_system_logger_debug(js_env_t *env, js_callback_info_t *info) {
+  utf8_t *data;
+  if (!bare_system_logger__read(env, info, &data)) return NULL;
 
   log_debug("%s", data);
 
@@ -44,32 +87,8 @@ bare_system_logger_debug(js_env_t *env, js_callback_info_t *info) {
 
 static js_value_t *
 bare_system_logger_info(js_env_t *env, js_callback_info_t *info) {
-  int err;
-
-  js_handle_scope_t *scope;
-  err = js_open_handle_scope(env, &scope);
-  assert(err == 0);
-
-  js_value_t *argv[1];
-  size_t argc = 1;
-
-  err = js_get_callback_info(env, info, &argc, argv, NULL, NULL);
-  assert(err == 0);
-
-  assert(argc == 1);
-
-  size_t data_len;
-  err = js_get_value_string_utf8(env, argv[0], NULL, 0, &data_len);
-  assert(err == 0);
-
-  data_len += 1 /* NULL */;
-
-  utf8_t *data = malloc(data_len);
-  err = js_get_value_string_utf8(env, argv[0], data, data_len, NULL);
-  assert(err == 0);
-
-  err = js_close_handle_scope(env, scope);
-  assert(err == 0);
+  utf8_t *data;
+  if (!bare_system_logger__read(env, info, &data)) return NULL;
 
   log_info("%s", data);
 
@@ -80,32 +99,8 @@ bare_system_logger_info(js_env_t *env, js_callback_info_t *info) {
 
 static js_value_t *
 bare_system_logger_warn(js_env_t *env, js_callback_info_t *info) {
-  int err;
-
-  js_handle_scope_t *scope;
-  err = js_open_handle_scope(env, &scope);
-  assert(err == 0);
-
-  js_value_t *argv[1];
-  size_t argc = 1;
-
-  err = js_get_callback_info(env, info, &argc, argv, NULL, NULL);
-  assert(err == 0);
-
-  assert(argc == 1);
-
-  size_t data_len;
-  err = js_get_value_string_utf8(env, argv[0], NULL, 0, &data_len);
-  assert(err == 0);
-
-  data_len += 1 /* NULL */;
-
-  utf8_t *data = malloc(data_len);
-  err = js_get_value_string_utf8(env, argv[0], data, data_len, NULL);
-  assert(err == 0);
-
-  err = js_close_handle_scope(env, scope);
-  assert(err == 0);
+  utf8_t *data;
+  if (!bare_system_logger__read(env, info, &data)) return NULL;
 
   log_warn("%s", data);
 
@@ -116,32 +111,8 @@ bare_system_logger_warn(js_env_t *env, js_callback_info_t *info) {
 
 static js_value_t *
 bare_system_logger_error(js_env_t *env, js_callback_info_t *info) {
-  int err;
-
-  js_handle_scope_t *scope;
-  err = js_open_handle_scope(env, &scope);
-  assert(err == 0);
-
-  js_value_t *argv[1];
-  size_t argc = 1;
-
-  err = js_get_callback_info(env, info, &argc, argv, NULL, NULL);
-  assert(err == 0);
-
-  assert(argc == 1);
-
-  size_t data_len;
-  err = js_get_value_string_utf8(env, argv[0], NULL, 0, &data_len);
-  assert(err == 0);
-
-  data_len += 1 /* NULL */;
-
-  utf8_t *data = malloc(data_len);
-  err = js_get_value_string_utf8(env, argv[0], data, data_len, NULL);
-  assert(err == 0);
-
-  err = js_close_handle_scope(env, scope);
-  assert(err == 0);
+  utf8_t *data;
+  if (!bare_system_logger__read(env, info, &data)) return NULL;
 
   log_error("%s", data);
 
@@ -152,38 +123,18 @@ bare_system_logger_error(js_env_t *env, js_callback_info_t *info) {
 
 static js_value_t *
 bare_system_logger_fatal(js_env_t *env, js_callback_info_t *info) {
-  int err;
-
-  js_handle_scope_t *scope;
-  err = js_open_handle_scope(env, &scope);
-  assert(err == 0);
-
-  js_value_t *argv[1];
-  size_t argc = 1;
-
-  err = js_get_callback_info(env, info, &argc, argv, NULL, NULL);
-  assert(err == 0);
-
-  assert(argc == 1);
-
-  size_t data_len;
-  err = js_get_value_string_utf8(env, argv[0], NULL, 0, &data_len);
-  assert(err == 0);
-
-  data_len += 1 /* NULL */;
-
-  utf8_t *data = malloc(data_len);
-  err = js_get_value_string_utf8(env, argv[0], data, data_len, NULL);
-  assert(err == 0);
-
-  err = js_close_handle_scope(env, scope);
-  assert(err == 0);
+  utf8_t *data;
+  if (!bare_system_logger__read(env, info, &data)) return NULL;
 
   log_fatal("%s", data);
 
   free(data);
 
-  exit(1);
+  // log_fatal() terminates the process itself, but returns instead if the
+  // record could not be formatted, leaving nothing to do but terminate without
+  // running atexit handlers and static destructors, which other threads may
+  // still be executing JavaScript against.
+  _Exit(1);
 
   return NULL;
 }
