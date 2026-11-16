@@ -5,7 +5,7 @@ find_package(cmake-fetch REQUIRED PATHS node_modules/cmake-fetch)
 
 project(bare_system_logger C)
 
-fetch_package("github:holepunchto/liblog#ff6e524")
+fetch_package("github:holepunchto/liblog#6064741")
 
 add_bare_module(bare_system_logger)
 
